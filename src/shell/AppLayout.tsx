@@ -41,7 +41,7 @@ export function AppLayout() {
             items={[
               { to: "/", label: "Home", icon: Home },
               { to: "/schedule", label: "Schedule", icon: CalendarDays, disabled: true },
-              { to: "/chat", label: "Chat", icon: MessagesSquare },
+              { to: "/chat", label: "Chat", icon: MessagesSquare, disabled: true },
               { to: "/profile", label: "User", icon: UserRound, disabled: true }
             ]}
             centerAction={{

@@ -15,7 +15,8 @@ Jano is a doctor-facing mobile PWA prototype for Clinic OPD workflows. This repo
 ## Current Implementation Status
 
 - Shell: phone-sized preview with sticky bottom navigation.
-- Patient home: live route with patient identity block, finite attention-card stack, quick action tiles, and clinical timeline.
+- Patient home: live route with patient identity block, a mobile-safe finite attention-card stack, quick action tiles, and clinical timeline.
+- Chat should be reachable from the quick-access tile, not from the bottom navigation. The bottom-nav chat icon remains present but disabled.
 - Notes:
   - `Notes` quick action now routes into a real notes flow
   - split into a filterable notes index and a focused structured editor

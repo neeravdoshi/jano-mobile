@@ -1,11 +1,5 @@
-import { useMemo, useState } from "react";
-import {
-  AnimatePresence,
-  motion,
-  useMotionValue,
-  useTransform,
-  type MotionValue
-} from "framer-motion";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import { ArrowLeft, ArrowRight, CheckCircle2, Clock3, TriangleAlert } from "lucide-react";
 
 import { Button } from "../../../design-system/components/Button";
@@ -33,7 +27,12 @@ const toneIcon = {
   success: CheckCircle2
 } as const;
 
-const SWIPE_THRESHOLD = 180;
+const MIN_SWIPE_THRESHOLD = 96;
+const MAX_SWIPE_THRESHOLD = 144;
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
 
 function StackPreviewCard({
   item,
@@ -43,9 +42,9 @@ function StackPreviewCard({
   item: AttentionItem;
   className: string;
   style: {
-    scale: MotionValue<number>;
-    y: MotionValue<number>;
-    opacity: MotionValue<number>;
+    scale: number;
+    y: number;
+    opacity: number;
     zIndex: number;
   };
 }) {
@@ -73,26 +72,53 @@ function StackPreviewCard({
 export function AttentionStack({ items, onEmpty }: AttentionStackProps) {
   const [remainingItems, setRemainingItems] = useState(items);
   const [exitDirection, setExitDirection] = useState<"left" | "right">("right");
+  const [dragX, setDragX] = useState(0);
+  const [stageWidth, setStageWidth] = useState(0);
+  const stageRef = useRef<HTMLDivElement | null>(null);
   const activeItem = remainingItems[0];
   const secondItem = remainingItems[1];
   const thirdItem = remainingItems[2];
-  const dragX = useMotionValue(0);
-  const rotate = useTransform(dragX, [-180, 0, 180], [-7, 0, 7]);
-  const lift = useTransform(dragX, [-180, 0, 180], [8, 0, 8]);
-  const revealProgress = useTransform(dragX, [-SWIPE_THRESHOLD, 0, SWIPE_THRESHOLD], [1, 0, 1]);
-  const secondScale = useTransform(revealProgress, [0, 1], [0.958, 0.986]);
-  const secondY = useTransform(revealProgress, [0, 1], [18, 8]);
-  const secondOpacity = useTransform(revealProgress, [0, 1], [0.9, 1]);
-  const thirdScale = useTransform(revealProgress, [0, 1], [0.928, 0.962]);
-  const thirdY = useTransform(revealProgress, [0, 1], [34, 18]);
-  const thirdOpacity = useTransform(revealProgress, [0, 1], [0.74, 0.86]);
-  const leftProgress = useTransform(dragX, [-SWIPE_THRESHOLD, 0], [1, 0]);
-  const rightProgress = useTransform(dragX, [0, SWIPE_THRESHOLD], [0, 1]);
+  const swipeThreshold = useMemo(() => {
+    if (stageWidth <= 0) {
+      return 120;
+    }
+
+    return clamp(stageWidth * 0.34, MIN_SWIPE_THRESHOLD, MAX_SWIPE_THRESHOLD);
+  }, [stageWidth]);
+  const revealProgress = Math.min(Math.abs(dragX) / swipeThreshold, 1);
+  const leftProgress = dragX < 0 ? revealProgress : 0;
+  const rightProgress = dragX > 0 ? revealProgress : 0;
+  const rotate = clamp((dragX / swipeThreshold) * 5.5, -5.5, 5.5);
+  const activeY = revealProgress * 4;
+  const secondScale = 0.968 + revealProgress * 0.018;
+  const secondY = 14 - revealProgress * 8;
+  const secondOpacity = 0.92 + revealProgress * 0.08;
+  const thirdScale = 0.942 + revealProgress * 0.014;
+  const thirdY = 26 - revealProgress * 10;
+  const thirdOpacity = 0.76 + revealProgress * 0.08;
 
   const countLabel = useMemo(
     () => `${items.length - remainingItems.length + 1} / ${items.length}`,
     [items.length, remainingItems.length]
   );
+
+  useEffect(() => {
+    const element = stageRef.current;
+    if (!element) {
+      return;
+    }
+
+    const updateWidth = () => {
+      setStageWidth(element.clientWidth);
+    };
+
+    updateWidth();
+
+    const observer = new ResizeObserver(updateWidth);
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, []);
 
   function dismiss(direction: "left" | "right") {
     setExitDirection(direction);
@@ -103,7 +129,7 @@ export function AttentionStack({ items, onEmpty }: AttentionStackProps) {
       }
       return next;
     });
-    dragX.set(0);
+    setDragX(0);
   }
 
   if (!activeItem) {
@@ -114,7 +140,7 @@ export function AttentionStack({ items, onEmpty }: AttentionStackProps) {
 
   return (
     <div className="attention-stack">
-      <div className="attention-stack__stage">
+      <div className="attention-stack__stage" ref={stageRef}>
         {thirdItem ? (
           <StackPreviewCard
             item={thirdItem}
@@ -136,27 +162,34 @@ export function AttentionStack({ items, onEmpty }: AttentionStackProps) {
             className={`attention-card attention-card--${activeItem.tone}`}
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={0.14}
+            dragElastic={0.08}
+            dragMomentum={false}
             dragSnapToOrigin
-            style={{ x: dragX, rotate, y: lift, zIndex: 3 }}
+            style={{ x: dragX, rotate, y: activeY, zIndex: 3 }}
             initial={{ opacity: 0, y: 12, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{
               opacity: 0,
-              x: exitDirection === "left" ? -380 : 380,
-              rotate: exitDirection === "left" ? -12 : 12,
+              x: exitDirection === "left" ? -stageWidth - 80 : stageWidth + 80,
+              rotate: exitDirection === "left" ? -10 : 10,
               y: 18
             }}
             transition={motionTokens.spring.sheet}
+            onDrag={(_, info) => {
+              setDragX(info.offset.x);
+            }}
             onDragEnd={(_, info) => {
-              if (info.offset.x <= -SWIPE_THRESHOLD) {
+              if (info.offset.x <= -swipeThreshold) {
                 dismiss("left");
                 return;
               }
 
-              if (info.offset.x >= SWIPE_THRESHOLD) {
+              if (info.offset.x >= swipeThreshold) {
                 dismiss("right");
+                return;
               }
+
+              setDragX(0);
             }}
           >
             <div className="attention-card__header">
@@ -186,9 +219,9 @@ export function AttentionStack({ items, onEmpty }: AttentionStackProps) {
 
       <div className="attention-stack__actions">
         <motion.button
-          className="attention-stack__tertiary"
-          type="button"
-          onClick={() => dismiss("left")}
+            className="attention-stack__tertiary"
+            type="button"
+            onClick={() => dismiss("left")}
         >
           <motion.span
             className="attention-stack__tertiary-fill attention-stack__tertiary-fill--left"
@@ -198,9 +231,9 @@ export function AttentionStack({ items, onEmpty }: AttentionStackProps) {
           Keep unread
         </motion.button>
         <motion.button
-          className="attention-stack__tertiary attention-stack__tertiary--right"
-          type="button"
-          onClick={() => dismiss("right")}
+            className="attention-stack__tertiary attention-stack__tertiary--right"
+            type="button"
+            onClick={() => dismiss("right")}
         >
           <motion.span
             className="attention-stack__tertiary-fill attention-stack__tertiary-fill--right"

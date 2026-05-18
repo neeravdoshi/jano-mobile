@@ -160,7 +160,8 @@ The following patterns are intentionally live in product code but remain outside
 
 - `AttentionStack`
   - finite deck behavior
-  - threshold-based swipe commit
+  - simplified horizontal drag tuned for mobile screens
+  - threshold-based swipe commit with no momentum carry
   - tertiary read/unread affordances with drag-progress fill
   - blank background preview cards for depth rather than partial content preview
 - homepage clinical timeline
@@ -177,6 +178,7 @@ The following patterns are intentionally live in product code but remain outside
   - merge multi-channel patient communication into one doctor-facing thread
   - clearly distinguish patient messages, team replies, and internal care-team notes
   - keep the conversation clinically calm and operational, not consumer-social
+  - entry point is the home quick-action tile; the bottom-nav chat slot stays disabled
 - `TimelineCard`
   - source hooks: `.timeline-card*`
   - repeated within the home clinical record, but still intentionally local
