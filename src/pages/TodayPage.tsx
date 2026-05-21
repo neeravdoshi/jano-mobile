@@ -58,7 +58,7 @@ const attentionItems: AttentionItem[] = [
     id: "prescription-review",
     eyebrow: "Prescription",
     title: "Refill needs dosage review",
-    body: "Insulin glargine was requested again, but recent sugars and foot pain notes suggest review first.",
+    body: "Insulin glargine refill was requested, but recent fasting sugars and dialysis logs suggest a dose review first.",
     detail: "2 meds pending",
     cta: "Review Rx",
     tone: "success"
@@ -129,6 +129,22 @@ const timelineEntries: TimelineEntry[] = [
     icon: FileText
   },
   {
+    id: "medication-05-apr",
+    date: "05 Apr 2026",
+    category: "Medication",
+    variant: "medication",
+    title: "Metformin discontinued",
+    meta: "eGFR decline · Dr. Patel · Endocrinology",
+    summary: "Metformin stopped after eGFR dropped below the safe threshold. Diabetes plan revised with Endocrinology.",
+    medication: {
+      name: "Metformin",
+      detail: "500 mg",
+      schedule: "Twice daily · Oral",
+      change: "Stopped"
+    },
+    icon: PillIcon
+  },
+  {
     id: "dialysis-05-apr",
     date: "05 Apr 2026",
     category: "Dialysis",
@@ -157,16 +173,6 @@ const timelineEntries: TimelineEntry[] = [
     icon: FlaskConical
   },
   {
-    id: "dialysis-review-18-mar",
-    date: "18 Mar 2026",
-    category: "Care note",
-    variant: "note",
-    title: "Dialysis regimen reviewed",
-    meta: "Nephrology + dialysis unit",
-    bullets: ["Dry weight revised after 2-week review", "Monitor post-session cramps closely"],
-    icon: NotebookText
-  },
-  {
     id: "medication-28-mar",
     date: "28 Mar 2026",
     category: "Medication",
@@ -183,6 +189,16 @@ const timelineEntries: TimelineEntry[] = [
     icon: PillIcon
   },
   {
+    id: "dialysis-review-18-mar",
+    date: "18 Mar 2026",
+    category: "Care note",
+    variant: "note",
+    title: "Dialysis regimen reviewed",
+    meta: "Nephrology + dialysis unit",
+    bullets: ["Dry weight revised after 2-week review", "Monitor post-session cramps closely"],
+    icon: NotebookText
+  },
+  {
     id: "procedure-15-mar",
     date: "15 Mar 2026",
     category: "Procedure",
@@ -196,6 +212,70 @@ const timelineEntries: TimelineEntry[] = [
       subtitle: "Wound care and review schedule"
     },
     icon: ScanText
+  },
+  {
+    id: "medication-03-mar",
+    date: "03 Mar 2026",
+    category: "Medication",
+    variant: "medication",
+    title: "Amlodipine paused",
+    meta: "Low BP during MHD · Dr. Smith · Cardiology",
+    summary: "Amlodipine temporarily held after blood pressure dropped during MHD week. Review scheduled when pressure stabilises.",
+    medication: {
+      name: "Amlodipine",
+      detail: "5 mg",
+      schedule: "Once daily · Oral",
+      change: "Paused"
+    },
+    icon: PillIcon
+  },
+  {
+    id: "medication-20-feb",
+    date: "20 Feb 2026",
+    category: "Medication",
+    variant: "medication",
+    title: "Metformin started",
+    meta: "Diabetes management · Dr. Patel · Endocrinology",
+    summary: "Metformin added to manage blood sugar alongside the ongoing dialysis regimen after endocrine review.",
+    medication: {
+      name: "Metformin",
+      detail: "500 mg",
+      schedule: "Twice daily · Oral",
+      change: "New start"
+    },
+    icon: PillIcon
+  },
+  {
+    id: "medication-12-jan",
+    date: "12 Jan 2026",
+    category: "Medication",
+    variant: "medication",
+    title: "EPO therapy started",
+    meta: "Anaemia management · Dr. Girish · Nephrology",
+    summary: "Erythropoietin alfa started for dialysis-related anaemia. Haemoglobin target set at 10–11 g/dL.",
+    medication: {
+      name: "Erythropoietin alfa",
+      detail: "4000 IU",
+      schedule: "3x / week · SC",
+      change: "New start"
+    },
+    icon: PillIcon
+  },
+  {
+    id: "medication-03-jan",
+    date: "03 Jan 2026",
+    category: "Medication",
+    variant: "medication",
+    title: "Amlodipine added",
+    meta: "BP control · Dr. Smith · Cardiology",
+    summary: "Amlodipine added after home BP logs showed persistent hypertension between dialysis sessions.",
+    medication: {
+      name: "Amlodipine",
+      detail: "5 mg",
+      schedule: "Once daily · Oral",
+      change: "New start"
+    },
+    icon: PillIcon
   },
   {
     id: "session-24-sep",
@@ -228,6 +308,22 @@ const timelineEntries: TimelineEntry[] = [
     icon: ScanText
   },
   {
+    id: "medication-03-sep",
+    date: "03 Sep 2025",
+    category: "Medication",
+    variant: "medication",
+    title: "Phosphate binder started",
+    meta: "Dialysis prep · Dr. Mehta · Nephrology",
+    summary: "Calcium acetate started to control phosphorus levels ahead of dialysis initiation.",
+    medication: {
+      name: "Calcium acetate",
+      detail: "667 mg",
+      schedule: "With meals · Oral",
+      change: "New start"
+    },
+    icon: PillIcon
+  },
+  {
     id: "treatment-plan-03-sep",
     date: "03 Sep 2025",
     category: "Care note",
@@ -243,12 +339,12 @@ const timelineEntries: TimelineEntry[] = [
     category: "Medication",
     variant: "medication",
     title: "CKD medications started",
-    meta: "Initial renal regimen",
-    summary: "Supportive medication plan was started for BP control and volume management.",
+    meta: "Initial renal regimen · Dr. Mehta · Nephrology",
+    summary: "Torsemide and sodium bicarbonate started for volume control and metabolic acidosis management.",
     medication: {
-      name: "Torsemide + amlodipine",
-      detail: "10 mg / 5 mg",
-      schedule: "Morning · Oral",
+      name: "Torsemide + sodium bicarbonate",
+      detail: "20 mg / 650 mg",
+      schedule: "Morning / Twice daily · Oral",
       change: "New start"
     },
     icon: PillIcon
