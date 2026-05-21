@@ -1515,6 +1515,27 @@ a {
   padding: var(--space-md) var(--space-md) calc(92px + env(safe-area-inset-bottom));
 }
 
+.chat-body {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.chat-body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.72;
+  background-image:
+    radial-gradient(circle at center, rgba(162, 168, 195, 0.34) 1.05px, transparent 1.15px);
+  background-size: 18px 18px;
+  background-position: 0 0;
+  mask-image: radial-gradient(circle at center, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.84) 52%, transparent 100%);
+  -webkit-mask-image: radial-gradient(circle at center, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.84) 52%, transparent 100%);
+}
+
 .trends-header-action {
   display: inline-flex;
   align-items: center;
@@ -4251,6 +4272,11 @@ a {
 .chat-thread__messages {
   display: grid;
   gap: 12px;
+}
+
+.chat-thread {
+  position: relative;
+  z-index: 1;
 }
 
 .chat-thread__divider {
