@@ -65,7 +65,7 @@ export const prescriptions: PrescriptionRecord[] = [
     department: "Nephrology",
     doctor: "Dr. Mehta",
     status: "signed",
-    summary: "Hypertension guidance tightened and phosphate binder reviewed after latest pathology trends.",
+    summary: "BP hold on amlodipine confirmed pending home log review. Phosphate binder continued after latest pathology trends.",
     complaints: "Tiredness, appetite variation, morning BP fluctuations.",
     diagnosis: "CKD with blood pressure variability and phosphorus elevation.",
     vitals: [
@@ -82,7 +82,7 @@ export const prescriptions: PrescriptionRecord[] = [
         frequency: "1-0-0",
         duration: "10 days",
         timing: "Morning",
-        notes: "Restart low dose after reviewing home BP trend.",
+        notes: "Hold restart — review home BP log at next visit before reintroducing.",
       },
       {
         id: "rx-med-4",

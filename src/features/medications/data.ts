@@ -10,7 +10,7 @@ export const medications: Medication[] = [
     dosage: "4000 IU",
     frequency: "3x / week",
     startDate: "12 Jan 2026",
-    endDate: "12 May 2026",
+    endDate: "Ongoing",
     reviewDate: "14 May",
     status: "ongoing",
     indication: "Anaemia support around dialysis schedule",
@@ -103,10 +103,10 @@ export const medications: Medication[] = [
     endDate: "15 Aug 2026",
     reviewDate: "On hold",
     status: "paused",
-    indication: "Paused after low-pressure readings during MHD week",
+    indication: "Paused after low-pressure readings during MHD week — restart pending home BP log review",
     prescribedBy: "Dr. Smith",
     specialty: "Cardiology",
-    lastUpdated: "Paused on 3 Mar 2026",
+    lastUpdated: "Hold confirmed 8 Apr 2026",
     tone: "gold"
   },
   {
@@ -117,14 +117,14 @@ export const medications: Medication[] = [
     form: "Tab",
     dosage: "500 mg",
     frequency: "Twice / day",
-    startDate: "20 Feb 2026",
-    endDate: "05 Apr 2026",
+    startDate: "20 Aug 2025",
+    endDate: "24 Sep 2025",
     reviewDate: "Completed",
     status: "completed",
-    indication: "Stopped after eGFR decline and revised diabetes plan",
+    indication: "Stopped at dialysis initiation — contraindicated in dialysis-dependent CKD",
     prescribedBy: "Dr. Patel",
     specialty: "Endocrinology",
-    lastUpdated: "Stopped 5 Apr 2026",
+    lastUpdated: "Stopped at dialysis initiation Sep 2025",
     tone: "ink"
   }
 ];

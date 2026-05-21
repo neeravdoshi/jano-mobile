@@ -39,7 +39,7 @@ const attentionItems: AttentionItem[] = [
   {
     id: "high-potassium",
     eyebrow: "Urgent lab alert",
-    title: "High potassium: 6.1 mEq/L",
+    title: "High potassium: 5.3 mEq/L",
     body: "Latest pathology value is elevated and needs confirmation before prescription changes.",
     detail: "Elevated 1 hr ago",
     cta: "View trends",
@@ -50,7 +50,7 @@ const attentionItems: AttentionItem[] = [
     eyebrow: "Care gap",
     title: "Missed dialysis session",
     body: "Yesterday's MHD attendance is unconfirmed and follow-up is pending with the patient.",
-    detail: "12 Apr 2025",
+    detail: "12 Apr 2026",
     cta: "Open outreach",
     tone: "warning"
   },
@@ -127,22 +127,6 @@ const timelineEntries: TimelineEntry[] = [
       subtitle: "BP meds + renal diet advice"
     },
     icon: FileText
-  },
-  {
-    id: "medication-05-apr",
-    date: "05 Apr 2026",
-    category: "Medication",
-    variant: "medication",
-    title: "Metformin discontinued",
-    meta: "eGFR decline · Dr. Patel · Endocrinology",
-    summary: "Metformin stopped after eGFR dropped below the safe threshold. Diabetes plan revised with Endocrinology.",
-    medication: {
-      name: "Metformin",
-      detail: "500 mg",
-      schedule: "Twice daily · Oral",
-      change: "Stopped"
-    },
-    icon: PillIcon
   },
   {
     id: "dialysis-05-apr",
@@ -230,22 +214,6 @@ const timelineEntries: TimelineEntry[] = [
     icon: PillIcon
   },
   {
-    id: "medication-20-feb",
-    date: "20 Feb 2026",
-    category: "Medication",
-    variant: "medication",
-    title: "Metformin started",
-    meta: "Diabetes management · Dr. Patel · Endocrinology",
-    summary: "Metformin added to manage blood sugar alongside the ongoing dialysis regimen after endocrine review.",
-    medication: {
-      name: "Metformin",
-      detail: "500 mg",
-      schedule: "Twice daily · Oral",
-      change: "New start"
-    },
-    icon: PillIcon
-  },
-  {
     id: "medication-12-jan",
     date: "12 Jan 2026",
     category: "Medication",
@@ -274,6 +242,22 @@ const timelineEntries: TimelineEntry[] = [
       detail: "5 mg",
       schedule: "Once daily · Oral",
       change: "New start"
+    },
+    icon: PillIcon
+  },
+  {
+    id: "medication-24-sep",
+    date: "24 Sep 2025",
+    category: "Medication",
+    variant: "medication",
+    title: "Metformin discontinued",
+    meta: "Dialysis initiation · Dr. Patel · Endocrinology",
+    summary: "Metformin stopped at dialysis initiation — contraindicated in dialysis-dependent CKD due to lactic acidosis risk. Diabetes plan to be revised.",
+    medication: {
+      name: "Metformin",
+      detail: "500 mg",
+      schedule: "Twice daily · Oral",
+      change: "Stopped"
     },
     icon: PillIcon
   },
@@ -345,6 +329,22 @@ const timelineEntries: TimelineEntry[] = [
       name: "Torsemide + sodium bicarbonate",
       detail: "20 mg / 650 mg",
       schedule: "Morning / Twice daily · Oral",
+      change: "New start"
+    },
+    icon: PillIcon
+  },
+  {
+    id: "medication-20-aug-metformin",
+    date: "20 Aug 2025",
+    category: "Medication",
+    variant: "medication",
+    title: "Metformin started",
+    meta: "Pre-dialysis diabetes management · Dr. Patel · Endocrinology",
+    summary: "Metformin added for blood sugar control while still in the pre-dialysis CKD phase, pending endocrine follow-up.",
+    medication: {
+      name: "Metformin",
+      detail: "500 mg",
+      schedule: "Twice daily · Oral",
       change: "New start"
     },
     icon: PillIcon

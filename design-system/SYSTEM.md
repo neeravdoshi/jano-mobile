@@ -140,6 +140,17 @@ These are the cross-screen structures and recurring UI families that should be t
     - prefer compact review layouts over dashboard-style subgrids when the screen goal is rapid regimen scanning
     - this should remain a documented feature pattern until a second medication-like object needs the same structure
 
+- `AISuggestion`
+  - source hooks: `.ai-suggestion*`
+  - current use:
+    - medication review recommendation
+  - role:
+    - compact AI-authored recommendation block that is clearly distinct from ordinary clinical content without becoming visually loud
+  - rule:
+    - keep the icon inline and small
+    - use only Jano token-aligned shine/accent colors
+    - the treatment should compress attention, not expand the card vertically
+
 ## Deferred
 
 - Swipe stacks
@@ -174,11 +185,15 @@ The following patterns are intentionally live in product code but remain outside
   - split between an index surface for scanning/filtering and an editor surface for capture
   - keep list cards concise and metadata-led; do not turn notes into a generic card feed
   - use structured sections in the editor instead of a blank longform document by default
+  - patient profile detail should open as a centered in-phone modal sheet rather than a bottom sheet when the content is summary-heavy and read-focused
 - chat flow
   - merge multi-channel patient communication into one doctor-facing thread
   - clearly distinguish patient messages, team replies, and internal care-team notes
   - keep the conversation clinically calm and operational, not consumer-social
   - entry point is the home quick-action tile; the bottom-nav chat slot stays disabled
+- prescription flow
+  - if `New Rx` overwhelmingly means creating a typed prescription, route there directly instead of presenting a chooser overlay
+  - print preview is a mobile-contained document surface and should remain visually bounded by the device shell
 - `TimelineCard`
   - source hooks: `.timeline-card*`
   - repeated within the home clinical record, but still intentionally local

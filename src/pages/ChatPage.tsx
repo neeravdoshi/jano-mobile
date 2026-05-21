@@ -1,40 +1,13 @@
 import { motion } from "framer-motion";
-import { useMemo, useState } from "react";
-import { ChevronLeft, Mic, Paperclip, Send, Shield, Sparkles } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ChevronLeft, Mic, Paperclip, Send } from "lucide-react";
 import clsx from "clsx";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { motionTokens } from "../design-system/motion";
-import { Pill } from "../design-system/components/Pill";
 import { patients } from "../fixtures/patients";
 import { careTeam, chatMessages } from "../features/chat/data";
-import type { ChatMessage, ChatSource } from "../features/chat/types";
-
-function sourceLabel(source: ChatSource) {
-  switch (source) {
-    case "whatsapp":
-      return "WhatsApp";
-    case "sms":
-      return "SMS";
-    case "app":
-      return "Patient app";
-    case "system":
-      return "System";
-  }
-}
-
-function sourceTone(source: ChatSource) {
-  switch (source) {
-    case "whatsapp":
-      return "success";
-    case "sms":
-      return "warning";
-    case "app":
-      return "neutral";
-    case "system":
-      return "neutral";
-  }
-}
+import type { ChatMessage } from "../features/chat/types";
 
 function MessageBubble({ message }: { message: ChatMessage }) {
   const isIncoming = message.role === "patient";
@@ -65,11 +38,8 @@ function MessageBubble({ message }: { message: ChatMessage }) {
         )}
       >
         <div className="chat-message__meta">
-          <div className="chat-message__author">
-            <strong>{message.author}</strong>
-            <span>{message.time}</span>
-          </div>
-          {!isInternal ? <Pill tone={sourceTone(message.source)}>{sourceLabel(message.source)}</Pill> : null}
+          <strong>{message.author}</strong>
+          <span>{message.time}</span>
         </div>
         <p className="chat-message__body">{message.body}</p>
         {message.meta ? <p className="chat-message__footer">{message.meta}</p> : null}
@@ -84,6 +54,11 @@ export function ChatPage() {
   const patientId = (location.state as { patientId?: string } | null)?.patientId;
   const patient = patients.find((entry) => entry.id === patientId) ?? patients[0];
   const [draft, setDraft] = useState("");
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "instant" });
+  }, []);
 
   const groupedMessages = useMemo(() => {
     const groups: Array<{ label: string; messages: ChatMessage[] }> = [];
@@ -108,47 +83,28 @@ export function ChatPage() {
       animate={{ opacity: 1, y: 0 }}
       transition={motionTokens.spring.sheet}
     >
-      <header className="subpage-header">
-        <button className="subpage-header__back" type="button" aria-label="Back" onClick={() => navigate(-1)}>
-          <ChevronLeft size={22} />
-        </button>
-        <div className="subpage-header__title-group">
-          <h1 className="subpage-header__title">Chat</h1>
-          <p className="subpage-header__subtitle">
-            {patient.name} · MRN {patient.id.toUpperCase()}
-          </p>
-        </div>
-      </header>
-
-      <div className="chat-body">
-        <section className="chat-context">
-          <div>
-            <p className="eyebrow">Shared care thread</p>
-            <h2 className="chat-context__title">Patient-facing conversation</h2>
-            <p className="chat-context__meta">
-              The patient experiences this as a direct doctor chat. The full care team can see and respond.
+      <div className="chat-header-band">
+        <header className="subpage-header">
+          <button className="subpage-header__back" type="button" aria-label="Back" onClick={() => navigate(-1)}>
+            <ChevronLeft size={22} />
+          </button>
+          <div className="subpage-header__title-group">
+            <h1 className="subpage-header__title">Chat</h1>
+            <p className="subpage-header__subtitle">
+              {patient.name} · MRN {patient.id.toUpperCase()}
             </p>
           </div>
-          <div className="chat-context__signals">
-            <span className="chat-context__signal">
-              <Shield size={14} />
-              Team visible
-            </span>
-            <span className="chat-context__signal">
-              <Sparkles size={14} />
-              Merged channels
-            </span>
-          </div>
-          <div className="chat-context__team">
-            {careTeam.map((member) => (
-              <div key={member.name} className="chat-context__member">
-                <strong>{member.name}</strong>
-                <span>{member.role}</span>
-              </div>
-            ))}
-          </div>
-        </section>
+        </header>
 
+        <div className="chat-context">
+          <span className="chat-context__label">Care thread</span>
+          <span className="chat-context__members">
+            {careTeam.map((m) => m.name).join(" · ")}
+          </span>
+        </div>
+      </div>
+
+      <div className="chat-body">
         <section className="chat-thread">
           {groupedMessages.map((group) => (
             <div className="chat-thread__group" key={group.label}>
@@ -164,6 +120,8 @@ export function ChatPage() {
           ))}
         </section>
       </div>
+
+      <div ref={bottomRef} />
 
       <div className="chat-composer">
         <div className="chat-composer__shell">
@@ -184,9 +142,6 @@ export function ChatPage() {
             <Send size={16} />
           </button>
         </div>
-        <p className="chat-composer__hint">
-          Replies are sent to the patient’s active channel and remain visible to the care team.
-        </p>
       </div>
     </motion.div>
   );

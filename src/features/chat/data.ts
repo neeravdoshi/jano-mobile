@@ -8,6 +8,25 @@ export const careTeam = [
 
 export const chatMessages: ChatMessage[] = [
   {
+    id: "msg-7",
+    author: "Ritika Sharma",
+    role: "patient",
+    source: "sms",
+    time: "06:22 PM",
+    dayLabel: "Yesterday",
+    body: "Also wanted to ask if I should continue the phosphate binder with dinner today.",
+  },
+  {
+    id: "msg-8",
+    author: "Dr. Mehta",
+    role: "doctor",
+    source: "system",
+    time: "06:40 PM",
+    dayLabel: "Yesterday",
+    body: "Yes, continue it with dinner tonight. We’ll review the dose again after the next phosphorus report.",
+    meta: "Delivered through SMS",
+  },
+  {
     id: "msg-1",
     author: "System",
     role: "system",
@@ -62,24 +81,5 @@ export const chatMessages: ChatMessage[] = [
     time: "08:44 AM",
     dayLabel: "Today",
     body: "Flag for post-dialysis review in tomorrow’s round. Check if amlodipine pause is still appropriate.",
-  },
-  {
-    id: "msg-7",
-    author: "Ritika Sharma",
-    role: "patient",
-    source: "sms",
-    time: "06:22 PM",
-    dayLabel: "Yesterday",
-    body: "Also wanted to ask if I should continue the phosphate binder with dinner today.",
-  },
-  {
-    id: "msg-8",
-    author: "Dr. Mehta",
-    role: "doctor",
-    source: "system",
-    time: "06:40 PM",
-    dayLabel: "Yesterday",
-    body: "Yes, continue it with dinner tonight. We’ll review the dose again after the next phosphorus report.",
-    meta: "Delivered through SMS",
   },
 ];
