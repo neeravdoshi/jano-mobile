@@ -2,6 +2,7 @@ import { ChevronLeft, Home, CalendarDays, MessagesSquare, Search, Sparkles, User
 import { Outlet, useNavigate } from "react-router-dom";
 
 import { patients } from "../fixtures/patients";
+import { QuickActionDrawer } from "../features/actions/QuickActionDrawer";
 import { BottomNav } from "../navigation/BottomNav";
 
 export function AppLayout() {
@@ -52,6 +53,7 @@ export function AppLayout() {
               }
             }}
           />
+          <QuickActionDrawer />
         </div>
       </div>
     </div>

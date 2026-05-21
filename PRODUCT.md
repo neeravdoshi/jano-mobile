@@ -29,6 +29,8 @@ The visual direction should be premium, minimal, and clinically calm, with real 
 
 The active color direction should follow the Jano working-file palette: `Crimson`, `Charcoal`, `Snow`, `Success Green`, `Stroke`, `Oslo`, `Warm Grey`, and `Intermediate Yellow`.
 
+`Crimson Base` `#E54B4B` should appear in selective accent moments across the product, not just in explicit alert/error states. Small, intentional red accents are part of the brand language and should be preferred over turning every high-emphasis action or highlight into black.
+
 The attached anti-reference reinforces what to avoid:
 
 - too many equal-weight modules competing at once

@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import {
   ChevronDown,
   ChevronLeft,
-  ChevronRight,
   Download,
   Plus,
   Search,
@@ -15,10 +14,11 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { patients } from '../fixtures/patients';
 import { motionTokens } from '../design-system/motion';
 import { MiniLineChart } from '../features/trends/components/MiniLineChart';
-import { ALL_CATEGORIES, pathologyParameters } from '../features/trends/data';
+import { ALL_CATEGORIES, pathologyParameters, TREND_DATES } from '../features/trends/data';
 import type { TrendParameter } from '../features/trends/types';
 
 const INITIAL_VISIBLE_COUNT = 3;
+const TABLE_VIEW_DATES = [...TREND_DATES].reverse();
 
 function fmtValue(v: number): string {
   if (Math.abs(v) >= 100) return Math.round(v).toString();
@@ -60,6 +60,25 @@ function getStatusLabel(param: TrendParameter): string {
   return 'Within range';
 }
 
+function formatResultMonth(iso: string): string {
+  return new Date(iso).toLocaleString('en-US', {
+    month: 'short',
+    year: 'numeric',
+  });
+}
+
+function formatTableDate(iso: string) {
+  const date = new Date(iso);
+  return {
+    day: date.toLocaleString('en-US', { day: '2-digit' }),
+    month: date.toLocaleString('en-US', { month: 'short' }),
+  };
+}
+
+function getPointForDate(param: TrendParameter, iso: string) {
+  return param.dataPoints.find((point) => point.date === iso);
+}
+
 function rankParameters(a: TrendParameter, b: TrendParameter): number {
   if (b.severityScore !== a.severityScore) return b.severityScore - a.severityScore;
   return getChangeMagnitude(b) - getChangeMagnitude(a);
@@ -97,65 +116,42 @@ function SummaryCard({
   );
 }
 
-function ParameterRow({
-  param,
-  expanded,
-  onToggle,
-}: {
-  param: TrendParameter;
-  expanded: boolean;
-  onToggle: () => void;
-}) {
-  const latest = getLatestPoint(param).value;
-  const previous = getPreviousPoint(param)?.value;
+function ParameterRow({ param }: { param: TrendParameter }) {
+  const latestPoint = getLatestPoint(param);
+  const previousPoint = getPreviousPoint(param);
+  const latest = latestPoint.value;
+  const previous = previousPoint?.value;
   const status = getStatusLabel(param);
   const outOfRange = isOutOfRange(param);
   const direction = getDirection(param);
   const delta = previous === undefined ? null : latest - previous;
+  const deltaLabel =
+    delta === null
+      ? 'Single reading'
+      : `${delta > 0 ? '+' : delta < 0 ? '-' : ''}${fmtValue(Math.abs(delta))}`;
+  const movementLabel =
+    delta === null
+      ? ''
+      : direction === 'up'
+        ? 'increased'
+        : direction === 'down'
+          ? 'decreased'
+          : 'no change';
 
   return (
     <article
       className={clsx(
         'trends-parameter-card',
-        outOfRange ? 'trends-parameter-card--danger' : 'trends-parameter-card--ok',
-        expanded && 'trends-parameter-card--expanded'
+        outOfRange ? 'trends-parameter-card--danger' : 'trends-parameter-card--ok'
       )}
     >
-      <button
-        type="button"
-        className="trends-parameter-card__toggle"
-        onClick={onToggle}
-        aria-expanded={expanded}
-      >
-        <div className="trends-parameter-card__main">
-          <div className="trends-parameter-card__identity">
-            <p className="trends-parameter-card__name">{param.name}</p>
-            <p className="trends-parameter-card__range">
-              Range {param.referenceRange.label} · {param.clinicalLabel}
-            </p>
-          </div>
-          <div className="trends-parameter-card__values">
-            {previous !== undefined && (
-              <>
-                <span className="trends-parameter-card__value-chip trends-parameter-card__value-chip--previous">
-                  {fmtValue(previous)}
-                </span>
-                <ChevronRight size={16} className="trends-parameter-card__arrow" />
-              </>
-            )}
-            <span
-              className={clsx(
-                'trends-parameter-card__value-chip',
-                outOfRange
-                  ? 'trends-parameter-card__value-chip--danger'
-                  : 'trends-parameter-card__value-chip--ok'
-              )}
-            >
-              {fmtValue(latest)}
-            </span>
-          </div>
+      <div className="trends-parameter-card__header">
+        <div className="trends-parameter-card__identity">
+          <p className="trends-parameter-card__name">
+            {param.name} <span>({param.unit})</span>
+          </p>
         </div>
-        <div className="trends-parameter-card__meta-row">
+        <div className="trends-parameter-card__header-meta">
           <span
             className={clsx(
               'trends-parameter-card__status',
@@ -166,56 +162,52 @@ function ParameterRow({
           >
             {status}
           </span>
-          <span className="trends-parameter-card__delta">
-            {delta === null
-              ? 'Single reading'
-              : `${direction === 'up' ? 'Up' : direction === 'down' ? 'Down' : 'No change'} ${fmtValue(Math.abs(delta))} ${param.unit}`}
+          <span className="trends-parameter-card__range">
+            Range {param.referenceRange.label} {param.unit}
           </span>
-          <ChevronDown
-            size={18}
-            className={clsx(
-              'trends-parameter-card__expand-icon',
-              expanded && 'trends-parameter-card__expand-icon--expanded'
-            )}
+        </div>
+      </div>
+
+      <div className="trends-parameter-card__result-grid">
+        <div className="trends-parameter-card__result trends-parameter-card__result--latest">
+          <p>{fmtValue(latest)}</p>
+          <span>{formatResultMonth(latestPoint.date)}</span>
+        </div>
+        {previousPoint ? (
+          <div className="trends-parameter-card__result trends-parameter-card__result--previous">
+            <p>{fmtValue(previousPoint.value)}</p>
+            <span>{formatResultMonth(previousPoint.date)}</span>
+          </div>
+        ) : (
+          <div className="trends-parameter-card__result trends-parameter-card__result--previous">
+            <p>--</p>
+            <span>No previous result</span>
+          </div>
+        )}
+      </div>
+
+      <div className="trends-parameter-card__insight-row">
+        <span
+          className={clsx(
+            'trends-parameter-card__delta',
+            outOfRange && 'trends-parameter-card__delta--danger',
+            !outOfRange && 'trends-parameter-card__delta--ok'
+          )}
+        >
+          {deltaLabel}
+        </span>
+        {movementLabel ? <span>{movementLabel}</span> : null}
+        <span className="trends-parameter-card__clinical-label">{param.clinicalLabel}</span>
+      </div>
+
+      <div className="trends-parameter-card__detail">
+        <div className="param-chart-plot-shell">
+          <MiniLineChart
+            dataPoints={param.dataPoints}
+            referenceRange={param.referenceRange}
           />
         </div>
-      </button>
-
-      {expanded && (
-        <div className="trends-parameter-card__detail">
-          <div className="param-chart-summary">
-            <div>
-              <p className="param-chart-value">
-                {fmtValue(latest)}
-                <span className="param-chart-value-unit"> {param.unit}</span>
-              </p>
-              <p className="param-chart-caption">Latest result</p>
-            </div>
-            <div className="param-chart-delta-block">
-              <p
-                className={clsx(
-                  'param-chart-delta',
-                  direction === 'up' && 'param-chart-delta--up',
-                  direction === 'down' && 'param-chart-delta--down'
-                )}
-              >
-                {delta === null
-                  ? '—'
-                  : `${direction === 'up' ? '+' : direction === 'down' ? '−' : ''}${fmtValue(Math.abs(delta))}`}
-              </p>
-              <p className="param-chart-caption">
-                {previous !== undefined ? 'vs previous' : 'Single reading'}
-              </p>
-            </div>
-          </div>
-          <div className="param-chart-plot-shell">
-            <MiniLineChart
-              dataPoints={param.dataPoints}
-              referenceRange={param.referenceRange}
-            />
-          </div>
-        </div>
-      )}
+      </div>
     </article>
   );
 }
@@ -225,16 +217,12 @@ function ParameterSection({
   tone,
   params,
   visibleCount,
-  expandedId,
-  onToggleExpanded,
   onShowMore,
 }: {
   title: string;
   tone: 'danger' | 'ok';
   params: TrendParameter[];
   visibleCount: number;
-  expandedId: string | null;
-  onToggleExpanded: (id: string) => void;
   onShowMore: () => void;
 }) {
   const visibleParams = params.slice(0, visibleCount);
@@ -267,8 +255,6 @@ function ParameterSection({
             <ParameterRow
               key={param.id}
               param={param}
-              expanded={expandedId === param.id}
-              onToggle={() => onToggleExpanded(param.id)}
             />
           ))
         )}
@@ -284,14 +270,69 @@ function ParameterSection({
   );
 }
 
+function TrendsTable({ params }: { params: TrendParameter[] }) {
+  if (params.length === 0) {
+    return <p className="trends-empty">No parameters match your current filters.</p>;
+  }
+
+  return (
+    <div className="trends-table-wrapper">
+      <table className="trends-table">
+        <thead>
+          <tr>
+            <th className="trends-table__col-param">Parameter</th>
+            {TABLE_VIEW_DATES.map((iso) => {
+              const label = formatTableDate(iso);
+              return (
+                <th key={iso} className="trends-table__col-date">
+                  <span className="trends-table__date-day">{label.day}</span>
+                  <span className="trends-table__date-month">{label.month}</span>
+                </th>
+              );
+            })}
+          </tr>
+        </thead>
+        <tbody>
+          {params.map((param) => (
+            <tr key={param.id}>
+              <td>
+                <span className="trends-table__name">{param.name}</span>
+                <span className="trends-table__unit">{param.unit}</span>
+              </td>
+              {TABLE_VIEW_DATES.map((iso) => {
+                const point = getPointForDate(param, iso);
+                const isDanger =
+                  point !== undefined &&
+                  (point.value < param.referenceRange.low || point.value > param.referenceRange.high);
+
+                return (
+                  <td key={iso}>
+                    <span
+                      className={clsx(
+                        'trends-table__value',
+                        isDanger && 'trends-table__value--danger'
+                      )}
+                    >
+                      {point ? fmtValue(point.value) : '--'}
+                    </span>
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 export function TrendsPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [search, setSearch] = useState('');
-  const [keyOnly, setKeyOnly] = useState(false);
+  const [viewMode, setViewMode] = useState<'table' | 'chart'>('chart');
   const [summaryFilter, setSummaryFilter] = useState<'out' | 'in' | null>(null);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
   const [visibleCounts, setVisibleCounts] = useState({ out: INITIAL_VISIBLE_COUNT, in: INITIAL_VISIBLE_COUNT });
 
   const patientId = (location.state as { patientId?: string } | null)?.patientId;
@@ -306,12 +347,11 @@ export function TrendsPage() {
         !searchNeedle ||
         p.name.toLowerCase().includes(searchNeedle) ||
         p.clinicalLabel.toLowerCase().includes(searchNeedle);
-      const keyMatch = !keyOnly || p.isKeyParameter;
-      return catMatch && searchMatch && keyMatch;
+      return catMatch && searchMatch;
     });
 
     return [...base].sort(rankParameters);
-  }, [activeCategory, keyOnly, search]);
+  }, [activeCategory, search]);
 
   const outOfRangeParams = filtered.filter(isOutOfRange);
   const withinRangeParams = filtered.filter((param) => !isOutOfRange(param));
@@ -321,12 +361,7 @@ export function TrendsPage() {
     summaryFilter === 'out' ? [] : withinRangeParams;
 
   const resetDetailState = () => {
-    setExpandedId(null);
     setVisibleCounts({ out: INITIAL_VISIBLE_COUNT, in: INITIAL_VISIBLE_COUNT });
-  };
-
-  const handleToggleExpanded = (id: string) => {
-    setExpandedId((current) => (current === id ? null : id));
   };
 
   const handleShowMore = (section: 'out' | 'in') => {
@@ -346,15 +381,17 @@ export function TrendsPage() {
     setSearch(value);
   };
 
-  const handleKeyOnlyToggle = () => {
-    resetDetailState();
-    setKeyOnly((current) => !current);
-  };
-
   const handleSummaryFilterToggle = (next: 'out' | 'in') => {
     resetDetailState();
     setSummaryFilter((current) => (current === next ? null : next));
   };
+
+  const visibleTableParams =
+    summaryFilter === 'out'
+      ? outOfRangeParams
+      : summaryFilter === 'in'
+        ? withinRangeParams
+        : filtered;
 
   return (
     <motion.div
@@ -403,16 +440,23 @@ export function TrendsPage() {
         </div>
 
         <label className="trends-toggle">
-          <span className="trends-toggle__label">Key parameters only</span>
+          <span className="trends-toggle__label">Table view</span>
           <button
             type="button"
-            className={clsx('trends-toggle__switch', keyOnly && 'trends-toggle__switch--active')}
-            onClick={handleKeyOnlyToggle}
-            aria-pressed={keyOnly}
+            className={clsx(
+              'trends-toggle__switch',
+              viewMode === 'table' && 'trends-toggle__switch--active'
+            )}
+            onClick={() => setViewMode((current) => (current === 'chart' ? 'table' : 'chart'))}
+            aria-pressed={viewMode === 'table'}
           >
             <span className="trends-toggle__thumb" />
           </button>
         </label>
+
+        <div className="trends-section-header">
+          <span className="trends-section-label">Pathology</span>
+        </div>
 
         <div className="trends-search">
           <label className="trends-search__field">
@@ -424,10 +468,6 @@ export function TrendsPage() {
               onChange={(e) => handleSearchChange(e.target.value)}
             />
           </label>
-        </div>
-
-        <div className="trends-section-header">
-          <span className="trends-section-label">Pathology</span>
         </div>
 
         <div className="trends-filters">
@@ -457,30 +497,30 @@ export function TrendsPage() {
           ))}
         </div>
 
-        <div className="stack">
-          {summaryFilter !== 'in' && (
-            <ParameterSection
-              title="Out of range"
-              tone="danger"
-              params={visibleOutOfRangeParams}
-              visibleCount={visibleCounts.out}
-              expandedId={expandedId}
-              onToggleExpanded={handleToggleExpanded}
-              onShowMore={() => handleShowMore('out')}
-            />
-          )}
-          {summaryFilter !== 'out' && (
-            <ParameterSection
-              title="Within range"
-              tone="ok"
-              params={visibleWithinRangeParams}
-              visibleCount={visibleCounts.in}
-              expandedId={expandedId}
-              onToggleExpanded={handleToggleExpanded}
-              onShowMore={() => handleShowMore('in')}
-            />
-          )}
-        </div>
+        {viewMode === 'table' ? (
+          <TrendsTable params={visibleTableParams} />
+        ) : (
+          <div className="stack">
+            {summaryFilter !== 'in' && (
+              <ParameterSection
+                title="Out of range"
+                tone="danger"
+                params={visibleOutOfRangeParams}
+                visibleCount={visibleCounts.out}
+                onShowMore={() => handleShowMore('out')}
+              />
+            )}
+            {summaryFilter !== 'out' && (
+              <ParameterSection
+                title="Within range"
+                tone="ok"
+                params={visibleWithinRangeParams}
+                visibleCount={visibleCounts.in}
+                onShowMore={() => handleShowMore('in')}
+              />
+            )}
+          </div>
+        )}
       </div>
 
       <div className="trends-create-bar">

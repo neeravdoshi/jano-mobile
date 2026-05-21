@@ -48,6 +48,7 @@ export function AppRouter() {
         <Route path="/reports/new" element={<ReportsUploadPage />} />
         <Route path="/prescriptions" element={<PrescriptionsPage />} />
         <Route path="/prescriptions/new" element={<PrescriptionEditorPage />} />
+        <Route path="/prescriptions/upload" element={<ReportsUploadPage kind="prescription" />} />
         <Route path="/prescriptions/:prescriptionId" element={<PrescriptionEditorPage />} />
         <Route path="/medications" element={<MedicationsPage />} />
         <Route path="/chat" element={<ChatPage />} />

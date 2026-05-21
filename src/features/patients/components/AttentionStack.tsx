@@ -97,10 +97,14 @@ export function AttentionStack({ items, onEmpty }: AttentionStackProps) {
   const thirdY = 26 - revealProgress * 10;
   const thirdOpacity = 0.76 + revealProgress * 0.08;
 
-  const countLabel = useMemo(
-    () => `${items.length - remainingItems.length + 1} / ${items.length}`,
-    [items.length, remainingItems.length]
-  );
+  const countLabel = useMemo(() => {
+    if (!activeItem) {
+      return `0 / ${items.length}`;
+    }
+
+    const activeIndex = items.findIndex((item) => item.id === activeItem.id);
+    return `${activeIndex + 1} / ${items.length}`;
+  }, [activeItem, items]);
 
   useEffect(() => {
     const element = stageRef.current;
@@ -120,6 +124,10 @@ export function AttentionStack({ items, onEmpty }: AttentionStackProps) {
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    setRemainingItems(items);
+  }, [items]);
+
   function dismiss(direction: "left" | "right") {
     setExitDirection(direction);
     setRemainingItems((current) => {
@@ -128,6 +136,23 @@ export function AttentionStack({ items, onEmpty }: AttentionStackProps) {
         onEmpty?.();
       }
       return next;
+    });
+    setDragX(0);
+  }
+
+  function keepUnread() {
+    if (remainingItems.length <= 1) {
+      setDragX(0);
+      return;
+    }
+
+    setExitDirection("left");
+    setRemainingItems((current) => {
+      if (current.length <= 1) {
+        return current;
+      }
+
+      return [...current.slice(1), current[0]];
     });
     setDragX(0);
   }
@@ -180,7 +205,7 @@ export function AttentionStack({ items, onEmpty }: AttentionStackProps) {
             }}
             onDragEnd={(_, info) => {
               if (info.offset.x <= -swipeThreshold) {
-                dismiss("left");
+                keepUnread();
                 return;
               }
 
@@ -221,7 +246,7 @@ export function AttentionStack({ items, onEmpty }: AttentionStackProps) {
         <motion.button
             className="attention-stack__tertiary"
             type="button"
-            onClick={() => dismiss("left")}
+            onClick={keepUnread}
         >
           <motion.span
             className="attention-stack__tertiary-fill attention-stack__tertiary-fill--left"

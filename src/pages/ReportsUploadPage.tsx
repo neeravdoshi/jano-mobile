@@ -7,19 +7,39 @@ import { Button } from "../design-system/components/Button";
 import { motionTokens } from "../design-system/motion";
 import { patients } from "../fixtures/patients";
 
+type ReportsUploadPageProps = {
+  kind?: "report" | "prescription";
+};
+
+const uploadCopy = {
+  report: {
+    pageTitle: "New report",
+    heading: "Upload report",
+    body: "Add a finished report, outside lab PDF, or scan for this patient. Supported file types: PDF, JPG, PNG.",
+    button: "Select a file",
+  },
+  prescription: {
+    pageTitle: "Upload prescription",
+    heading: "Upload prescription",
+    body: "Add an outside prescription, scanned Rx, or PDF for this patient. Supported file types: PDF, JPG, PNG.",
+    button: "Select prescription",
+  },
+} as const;
+
 function formatFileSize(size: number) {
   if (size >= 1024 * 1024) return `${(size / (1024 * 1024)).toFixed(1)} MB`;
   if (size >= 1024) return `${Math.round(size / 1024)} KB`;
   return `${size} B`;
 }
 
-export function ReportsUploadPage() {
+export function ReportsUploadPage({ kind = "report" }: ReportsUploadPageProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const patientId = (location.state as { patientId?: string } | null)?.patientId;
   const patient = patients.find((entry) => entry.id === patientId) ?? patients[0];
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const copy = uploadCopy[kind];
 
   return (
     <motion.div
@@ -33,7 +53,7 @@ export function ReportsUploadPage() {
           <ChevronLeft size={22} />
         </button>
         <div className="subpage-header__title-group">
-          <h1 className="subpage-header__title">New report</h1>
+          <h1 className="subpage-header__title">{copy.pageTitle}</h1>
           <p className="subpage-header__subtitle">
             {patient.name} · MRN {patient.id.toUpperCase()}
           </p>
@@ -59,11 +79,8 @@ export function ReportsUploadPage() {
           </motion.div>
 
           <div className="reports-upload-copy">
-            <h2>Upload report</h2>
-            <p>
-              Add a finished report, outside lab PDF, or scan for this patient. Supported file
-              types: PDF, JPG, PNG.
-            </p>
+            <h2>{copy.heading}</h2>
+            <p>{copy.body}</p>
           </div>
 
           <div className="reports-upload-actions">
@@ -75,7 +92,7 @@ export function ReportsUploadPage() {
               onChange={(event) => setSelectedFile(event.target.files?.[0] ?? null)}
             />
             <Button className="reports-upload-select" onClick={() => inputRef.current?.click()}>
-              Select a file
+              {copy.button}
             </Button>
           </div>
 

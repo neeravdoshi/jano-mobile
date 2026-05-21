@@ -52,6 +52,7 @@ The current implementation should stay aligned to the colors visible in the Jano
 - Use fewer typography steps on mobile than desktop, with stronger contrast between title and body levels.
 - Default interaction targets should be 44px minimum height.
 - Corners should stay in the 12-24px range for cards and shell surfaces.
+- Do not treat dark charcoal as the only accent option. `Crimson Base` `#E54B4B` should appear in measured bits and pieces for calls to action, emphasis, and product punctuation, while staying more restrained than true alert/error usage.
 
 ## Initial Primitive Set
 
@@ -113,6 +114,17 @@ These are the cross-screen structures and recurring UI families that should be t
   - used in both main and subpage layouts
   - stable shell pattern, not feature-local UI
 
+- `QuickActionDrawer`
+  - source hooks: `.quick-drawer*`
+  - opened by the centered bottom-nav action and the home quick-access `Add` tile
+  - role:
+    - one-tap doctor action launcher for frequently used creation/order tasks
+    - should stay patient-context aware through route state
+  - rule:
+    - keep the action set short and operational
+    - use a bottom drawer for creation shortcuts, not another horizontal tile row
+    - the home quick-access tile should open this drawer rather than duplicating every create action inline
+
 ### Validated Repeating Product Patterns
 
 - `QuickActionTile`
@@ -121,6 +133,8 @@ These are the cross-screen structures and recurring UI families that should be t
     - patient home quick-access grid
   - role:
     - compact launch tile into high-frequency doctor tasks
+  - note:
+    - the red `Add` variant is a drawer trigger, not a normal navigation tile
 
 - `TrendSummaryCard`
   - source hooks: `.trends-summary-card*`

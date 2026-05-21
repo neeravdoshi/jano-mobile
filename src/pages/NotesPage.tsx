@@ -1,6 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { createPortal } from "react-dom";
+import { useEffect, useMemo, useState } from "react";
 import {
   ChevronLeft,
   ClipboardList,
@@ -97,10 +96,8 @@ export function NotesPage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const profile = patientProfiles[patient.id];
-  const portalTarget = useRef<Element | null>(null);
 
   useEffect(() => {
-    portalTarget.current = document.querySelector(".mobile-frame__screen");
     const scroller = document.querySelector<HTMLElement>(".screen-content");
     if (scroller) scroller.style.overflow = profileOpen ? "hidden" : "";
     return () => { if (scroller) scroller.style.overflow = ""; };
@@ -237,8 +234,7 @@ export function NotesPage() {
         </button>
       </div>
 
-      {portalTarget.current && createPortal(
-        <AnimatePresence>
+      <AnimatePresence>
         {profileOpen && profile ? (
           <motion.div
             className="patient-sheet-layer"
@@ -346,10 +342,7 @@ export function NotesPage() {
             </motion.div>
           </motion.div>
         ) : null}
-        </AnimatePresence>,
-        portalTarget.current
-      )}
-
+      </AnimatePresence>
       <AnimatePresence>
         {menuOpen ? (
           <motion.div

@@ -1,10 +1,13 @@
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useMemo, useState } from "react";
 import {
   ChevronLeft,
   ChevronRight,
+  FilePenLine,
+  FileUp,
   Plus,
   Search,
+  X,
 } from "lucide-react";
 import clsx from "clsx";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -73,6 +76,7 @@ export function PrescriptionsPage() {
 
   const [filter, setFilter] = useState<PrescriptionFilter>("all");
   const [query, setQuery] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const filteredPrescriptions = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -193,12 +197,67 @@ export function PrescriptionsPage() {
         <button
           type="button"
           className="floating-create-button"
-          onClick={() => navigate("/prescriptions/new", { state: { patientId: patient.id, mode: "typed" } })}
+          onClick={() => setMenuOpen((open) => !open)}
         >
-          <Plus size={18} />
+          {menuOpen ? <X size={18} /> : <Plus size={18} />}
           New Rx
         </button>
       </div>
+
+      <AnimatePresence>
+        {menuOpen ? (
+          <motion.div
+            className="notes-sheet-layer"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.button
+              type="button"
+              className="notes-sheet__scrim"
+              aria-label="Close prescription actions"
+              onClick={() => setMenuOpen(false)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
+            <motion.div
+              className="notes-sheet"
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 24 }}
+              transition={motionTokens.spring.sheet}
+            >
+              <button
+                type="button"
+                className="notes-sheet__option"
+                onClick={() => {
+                  setMenuOpen(false);
+                  navigate("/prescriptions/new", { state: { patientId: patient.id, mode: "typed" } });
+                }}
+              >
+                <span className="notes-sheet__option-icon">
+                  <FilePenLine size={16} />
+                </span>
+                <span>Start typed prescription</span>
+              </button>
+              <button
+                type="button"
+                className="notes-sheet__option"
+                onClick={() => {
+                  setMenuOpen(false);
+                  navigate("/prescriptions/upload", { state: { patientId: patient.id } });
+                }}
+              >
+                <span className="notes-sheet__option-icon">
+                  <FileUp size={16} />
+                </span>
+                <span>Upload prescription</span>
+              </button>
+            </motion.div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </motion.div>
   );
 }

@@ -1,6 +1,7 @@
 import { CalendarDays, Home, MessagesSquare, Sparkles, UserRound } from 'lucide-react';
 import { Outlet } from 'react-router-dom';
 
+import { QuickActionDrawer } from '../features/actions/QuickActionDrawer';
 import { BottomNav } from '../navigation/BottomNav';
 
 export function SubPageLayout() {
@@ -27,6 +28,7 @@ export function SubPageLayout() {
               },
             }}
           />
+          <QuickActionDrawer />
         </div>
       </div>
     </div>
