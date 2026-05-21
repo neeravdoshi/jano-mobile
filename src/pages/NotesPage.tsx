@@ -8,6 +8,7 @@ import {
   Plus,
   Search,
   Stethoscope,
+  UserRound,
   X,
 } from "lucide-react";
 import clsx from "clsx";
@@ -16,6 +17,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { motionTokens } from "../design-system/motion";
 import { Pill } from "../design-system/components/Pill";
 import { patients } from "../fixtures/patients";
+import { patientProfiles } from "../fixtures/patientProfiles";
 import { clinicalNotes, noteTypeLabels } from "../features/notes/data";
 import type { ClinicalNote, NoteType } from "../features/notes/types";
 
@@ -91,6 +93,8 @@ export function NotesPage() {
   const [activeFilter, setActiveFilter] = useState<NoteFilter>("all");
   const [query, setQuery] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profile = patientProfiles[patient.id];
 
   const filteredNotes = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -151,6 +155,14 @@ export function NotesPage() {
             {patient.name} · MRN {patient.id.toUpperCase()}
           </p>
         </div>
+        <button
+          className="subpage-header__action"
+          type="button"
+          aria-label="Patient profile"
+          onClick={() => setProfileOpen(true)}
+        >
+          <UserRound size={16} />
+        </button>
       </header>
 
       <div className="notes-body">
@@ -214,6 +226,90 @@ export function NotesPage() {
           <span>New note</span>
         </button>
       </div>
+
+      <AnimatePresence>
+        {profileOpen && profile ? (
+          <motion.div
+            className="patient-sheet-layer"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.button
+              type="button"
+              className="patient-sheet__scrim"
+              onClick={() => setProfileOpen(false)}
+              aria-label="Close patient profile"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
+            <motion.div
+              className="patient-sheet"
+              initial={{ y: 48, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 48, opacity: 0 }}
+              transition={motionTokens.spring.sheet}
+            >
+              <div className="patient-sheet__handle" />
+
+              <div className="patient-sheet__header">
+                <div className="patient-sheet__avatar">
+                  {patient.name.split(" ").map((n) => n[0]).join("")}
+                </div>
+                <div className="patient-sheet__identity">
+                  <strong className="patient-sheet__name">{patient.name}</strong>
+                  <span className="patient-sheet__demo">
+                    {patient.age} y · {patient.gender} · MRN {patient.id.toUpperCase()}
+                  </span>
+                </div>
+                <span className="patient-sheet__blood-group">{profile.bloodGroup}</span>
+              </div>
+
+              <div className="patient-sheet__dx-row">
+                <div className="patient-sheet__dx">
+                  <span className="patient-sheet__dx-label">Diagnosis</span>
+                  <strong className="patient-sheet__dx-value">{profile.diagnosis}</strong>
+                </div>
+                <div className="patient-sheet__dx">
+                  <span className="patient-sheet__dx-label">Since</span>
+                  <strong className="patient-sheet__dx-value">{profile.diagnosisSince}</strong>
+                </div>
+                <div className="patient-sheet__dx">
+                  <span className="patient-sheet__dx-label">Regimen</span>
+                  <strong className="patient-sheet__dx-value">{profile.regimen}</strong>
+                </div>
+                <div className="patient-sheet__dx">
+                  <span className="patient-sheet__dx-label">Physician</span>
+                  <strong className="patient-sheet__dx-value">{profile.primaryPhysician} · {profile.specialty}</strong>
+                </div>
+              </div>
+
+              <p className="patient-sheet__summary">{profile.summary}</p>
+
+              <div className="patient-sheet__findings">
+                {profile.keyFindings.map((finding) => (
+                  <span key={finding} className="patient-sheet__finding">{finding}</span>
+                ))}
+              </div>
+
+              <div className="patient-sheet__footer">
+                <span className="patient-sheet__footer-stat">
+                  <strong>{profile.activeMedications}</strong> active medications
+                </span>
+                <span className="patient-sheet__footer-divider" />
+                <span className="patient-sheet__footer-stat">
+                  Last review <strong>{profile.lastReview}</strong>
+                </span>
+                <span className="patient-sheet__footer-divider" />
+                <span className="patient-sheet__footer-stat">
+                  Allergy <strong>{profile.allergies}</strong>
+                </span>
+              </div>
+            </motion.div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
 
       <AnimatePresence>
         {menuOpen ? (
