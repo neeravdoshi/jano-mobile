@@ -10,6 +10,7 @@ import { NotesPage } from "../pages/NotesPage";
 import { PlaceholderPage } from "../pages/PlaceholderPage";
 import { PrescriptionEditorPage } from "../pages/PrescriptionEditorPage";
 import { PrescriptionsPage } from "../pages/PrescriptionsPage";
+import { ReportsUploadPage } from "../pages/ReportsUploadPage";
 import { SystemPage } from "../pages/SystemPage";
 import { TodayPage } from "../pages/TodayPage";
 import { TrendsPage } from "../pages/TrendsPage";
@@ -44,6 +45,7 @@ export function AppRouter() {
       <Route element={<SubPageLayout />}>
         <Route path="/dialysis" element={<DialysisPage />} />
         <Route path="/trends" element={<TrendsPage />} />
+        <Route path="/reports/new" element={<ReportsUploadPage />} />
         <Route path="/prescriptions" element={<PrescriptionsPage />} />
         <Route path="/prescriptions/new" element={<PrescriptionEditorPage />} />
         <Route path="/prescriptions/:prescriptionId" element={<PrescriptionEditorPage />} />

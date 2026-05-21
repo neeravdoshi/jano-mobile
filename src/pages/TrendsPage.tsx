@@ -5,6 +5,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Download,
+  Plus,
   Search,
   X,
 } from 'lucide-react';
@@ -480,6 +481,17 @@ export function TrendsPage() {
             />
           )}
         </div>
+      </div>
+
+      <div className="trends-create-bar">
+        <button
+          type="button"
+          className="floating-create-button"
+          onClick={() => navigate('/reports/new', { state: { patientId: patient.id } })}
+        >
+          <Plus size={16} />
+          <span>New report</span>
+        </button>
       </div>
     </motion.div>
   );

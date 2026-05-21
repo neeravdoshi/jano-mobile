@@ -231,7 +231,7 @@ export function NotesPage() {
       </div>
 
       <div className="notes-create-bar">
-        <button type="button" className="notes-create-bar__button" onClick={() => setMenuOpen((open) => !open)}>
+        <button type="button" className="floating-create-button" onClick={() => setMenuOpen((open) => !open)}>
           {menuOpen ? <X size={18} /> : <Plus size={18} />}
           <span>New note</span>
         </button>

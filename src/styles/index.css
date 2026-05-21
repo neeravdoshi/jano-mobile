@@ -1390,10 +1390,15 @@ a {
 
 .notes-page,
 .note-editor-page,
-.chat-page {
+.chat-page,
+.reports-upload-page {
   display: grid;
   min-height: 100%;
   align-content: start;
+}
+
+.reports-upload-page {
+  grid-template-rows: auto 1fr;
 }
 
 .notes-page {
@@ -1501,7 +1506,8 @@ a {
 
 .prescriptions-body,
 .prescription-editor-body,
-.dialysis-body {
+.dialysis-body,
+.reports-upload-body {
   display: grid;
   gap: var(--space-md);
   padding: var(--space-md) var(--space-md) calc(92px + env(safe-area-inset-bottom));
@@ -2987,8 +2993,9 @@ a {
 }
 
 .notes-create-bar,
-.note-editor__actions,
+.trends-create-bar,
 .rx-create-bar,
+.note-editor__actions,
 .prescription-editor__actions {
   position: sticky;
   bottom: 0;
@@ -2997,20 +3004,27 @@ a {
   background: linear-gradient(180deg, rgba(255, 253, 250, 0), rgba(255, 253, 250, 0.98) 28%);
 }
 
-.notes-create-bar__button {
-  width: 100%;
-  min-height: 52px;
+.notes-create-bar,
+.trends-create-bar,
+.rx-create-bar {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.floating-create-button {
+  min-height: 44px;
   border: none;
-  border-radius: 18px;
+  border-radius: 999px;
   background: var(--color-text);
   color: #fbf9f6;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  font-size: 0.94rem;
+  gap: 8px;
+  padding: 0 16px;
+  font-size: 0.84rem;
   font-weight: 600;
-  box-shadow: 0 16px 28px rgba(37, 35, 35, 0.16);
+  box-shadow: 0 14px 24px rgba(37, 35, 35, 0.16);
 }
 
 /* ─── Patient profile sheet ───────────────────────────────────── */
@@ -3336,6 +3350,173 @@ a {
   background: rgba(246, 247, 245, 0.96);
 }
 
+/* ─── Reports upload ──────────────────────────────────────────── */
+
+.reports-upload-body {
+  min-height: 0;
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  padding-top: var(--space-md);
+  padding-bottom: calc(92px + env(safe-area-inset-bottom));
+}
+
+.reports-upload-body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.72;
+  background-image:
+    radial-gradient(circle at center, rgba(162, 168, 195, 0.34) 1.05px, transparent 1.15px);
+  background-size: 18px 18px;
+  background-position: 0 0;
+  mask-image: radial-gradient(circle at center, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.84) 52%, transparent 100%);
+  -webkit-mask-image: radial-gradient(circle at center, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.84) 52%, transparent 100%);
+}
+
+.reports-upload-panel {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 22px;
+  justify-items: center;
+  width: min(100%, 100%);
+  max-width: 344px;
+  padding: 28px 24px 30px;
+  border-radius: 32px;
+  border: 1px solid rgba(212, 216, 219, 0.92);
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 18px 36px rgba(37, 35, 35, 0.08);
+  text-align: center;
+}
+
+.reports-upload-illustration {
+  position: relative;
+  width: 156px;
+  height: 156px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(226, 227, 227, 0.96), rgba(239, 239, 237, 0.96));
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.reports-upload-illustration__field {
+  display: none;
+}
+
+.reports-upload-illustration__core {
+  position: relative;
+  z-index: 1;
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: var(--color-text);
+  color: #fbf9f6;
+  box-shadow: 0 12px 28px rgba(37, 35, 35, 0.16);
+}
+
+.reports-upload-copy {
+  display: grid;
+  gap: 10px;
+  max-width: 280px;
+}
+
+.reports-upload-copy h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  line-height: 1.04;
+  color: var(--color-text);
+}
+
+.reports-upload-copy p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.84rem;
+  line-height: 1.6;
+}
+
+.reports-upload-actions {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  justify-items: center;
+}
+
+.reports-upload-input {
+  display: none;
+}
+
+.reports-upload-select {
+  min-width: 188px;
+}
+
+.reports-upload-selection {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(212, 216, 219, 0.92);
+  background: rgba(248, 249, 246, 0.94);
+  text-align: left;
+}
+
+.reports-upload-selection__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--color-text);
+  flex: 0 0 auto;
+}
+
+.reports-upload-selection__copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.reports-upload-selection__copy strong,
+.reports-upload-selection__copy span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reports-upload-selection__copy strong {
+  font-size: 0.94rem;
+  color: var(--color-text);
+}
+
+.reports-upload-selection__copy span {
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+}
+
+.reports-upload-selection__clear {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  display: grid;
+  place-items: center;
+  color: var(--color-text);
+  flex: 0 0 auto;
+}
+
 .prescription-editor__patient,
 .prescription-editor__sheet {
   padding: 18px;
@@ -3558,22 +3739,6 @@ a {
   margin: 0;
   font-size: 1rem;
   font-weight: 600;
-}
-
-.rx-create-bar__button {
-  width: 100%;
-  min-height: 52px;
-  border: none;
-  border-radius: 18px;
-  background: var(--color-text);
-  color: #fbf9f6;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  font-size: 0.94rem;
-  font-weight: 600;
-  box-shadow: 0 16px 28px rgba(37, 35, 35, 0.16);
 }
 
 .prescription-editor__patient-name {

@@ -192,7 +192,7 @@ export function PrescriptionsPage() {
       <div className="rx-create-bar">
         <button
           type="button"
-          className="rx-create-bar__button"
+          className="floating-create-button"
           onClick={() => navigate("/prescriptions/new", { state: { patientId: patient.id, mode: "typed" } })}
         >
           <Plus size={18} />
