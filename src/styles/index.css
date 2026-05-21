@@ -2874,34 +2874,48 @@ a {
   text-align: left;
   display: grid;
   gap: 10px;
-  padding: 16px;
-  border-radius: 24px;
-  border: 1px solid rgba(212, 216, 219, 0.92);
-  background: rgba(255, 255, 255, 0.98);
-  box-shadow: 0 12px 24px rgba(37, 35, 35, 0.05);
+  padding: 16px 18px 16px 22px;
+  border-radius: 20px;
+  border: 1px solid rgba(212, 216, 219, 0.85);
+  /* ruled lines on top of the warm base color */
+  background-color: rgba(255, 252, 245, 0.98);
+  background-image:
+    /* left margin rule */
+    linear-gradient(
+      to right,
+      transparent 34px,
+      rgba(229, 148, 0, 0.14) 34px,
+      rgba(229, 148, 0, 0.14) 35px,
+      transparent 35px
+    ),
+    /* horizontal ruled lines */
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 27px,
+      rgba(37, 35, 35, 0.07) 27px,
+      rgba(37, 35, 35, 0.07) 28px
+    );
+  box-shadow:
+    0 1px 3px rgba(37, 35, 35, 0.06),
+    0 8px 20px rgba(37, 35, 35, 0.05);
 }
 
 .note-card--progress {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 247, 245, 0.98)),
-    #fff;
+  background-color: rgba(253, 251, 246, 0.98);
 }
 
 .note-card--assessment {
-  background:
-    linear-gradient(180deg, rgba(255, 247, 247, 0.96), rgba(255, 255, 255, 0.98)),
-    #fff;
+  background-color: rgba(255, 248, 247, 0.97);
 }
 
 .note-card--discharge {
-  background:
-    linear-gradient(180deg, rgba(244, 250, 247, 0.98), rgba(255, 255, 255, 0.98)),
-    #fff;
+  background-color: rgba(246, 251, 248, 0.98);
 }
 
 .note-card--draft {
   border-style: dashed;
-  background: rgba(250, 249, 246, 0.96);
+  background-color: rgba(250, 249, 244, 0.96);
 }
 
 .note-card__copy {
@@ -2911,7 +2925,8 @@ a {
 
 .note-card__title {
   font-size: 1rem;
-  line-height: 1.15;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
 }
 
 .note-card__summary {
