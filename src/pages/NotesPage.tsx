@@ -154,26 +154,6 @@ export function NotesPage() {
       </header>
 
       <div className="notes-body">
-        <section className="notes-context">
-          <div>
-            <p className="eyebrow">Patient context</p>
-            <h2 className="notes-context__title">{patient.name}</h2>
-            <p className="notes-context__meta">
-              {patient.age}Y · {patient.gender} · {patient.tags.join(" · ")}
-            </p>
-          </div>
-          <div className="notes-context__stats">
-            <div>
-              <strong>{clinicalNotes.filter((note) => note.status === "signed").length}</strong>
-              <span>Signed</span>
-            </div>
-            <div>
-              <strong>{clinicalNotes.filter((note) => note.status === "draft").length}</strong>
-              <span>Drafts</span>
-            </div>
-          </div>
-        </section>
-
         <section className="notes-toolbar">
           <label className="notes-search">
             <Search size={16} />
@@ -237,7 +217,12 @@ export function NotesPage() {
 
       <AnimatePresence>
         {menuOpen ? (
-          <>
+          <motion.div
+            className="notes-sheet-layer"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
             <motion.button
               type="button"
               className="notes-sheet__scrim"
@@ -274,7 +259,7 @@ export function NotesPage() {
                 );
               })}
             </motion.div>
-          </>
+          </motion.div>
         ) : null}
       </AnimatePresence>
     </motion.div>

@@ -141,7 +141,7 @@ export function PrescriptionEditorPage() {
 
   return (
     <motion.div
-      className="prescription-editor-page"
+      className={`prescription-editor-page${printPreviewOpen ? " prescription-editor-page--preview-open" : ""}`}
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={motionTokens.spring.sheet}
@@ -446,7 +446,6 @@ export function PrescriptionEditorPage() {
             </div>
 
             <div className="prescription-print-preview__canvas">
-              <span className="prescription-print-preview__page-count">1 of 1</span>
               <article className="prescription-print-sheet">
                 <header className="prescription-print-sheet__header">
                   <div className="prescription-print-sheet__brand">

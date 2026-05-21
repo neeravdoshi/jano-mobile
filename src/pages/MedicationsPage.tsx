@@ -1,9 +1,11 @@
 import { useDeferredValue, useMemo, useState, startTransition } from "react";
 import { motion } from "framer-motion";
 import {
+  ArrowUpRight,
   ChevronLeft,
   Pill as PillIcon,
   Search,
+  Sparkles,
 } from "lucide-react";
 import clsx from "clsx";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -151,6 +153,20 @@ export function MedicationsPage() {
       </header>
 
       <div className="meds-body">
+        <section className="meds-cta-card">
+          <p className="meds-cta-card__copy">
+            To add or update medications, use the prescription workflow.
+          </p>
+          <button
+            type="button"
+            className="meds-cta-card__action"
+            onClick={() => navigate("/prescriptions", { state: { patientId: patient.id } })}
+          >
+            Open prescriptions
+            <ArrowUpRight size={16} />
+          </button>
+        </section>
+
         <section className="meds-hero-card">
           <div className="meds-hero-card__header">
             <div>
@@ -174,9 +190,22 @@ export function MedicationsPage() {
             </div>
           </div>
           {highlightedMedication ? (
-            <p className="meds-hero-card__review">
-              Review {highlightedMedication.name} against recent fasting sugar and dialysis follow-up.
-            </p>
+            <div className="meds-hero-card__review ai-suggestion">
+              <div className="ai-suggestion__copy">
+                <div className="ai-suggestion__tag-row">
+                  <span className="ai-suggestion__label">
+                    <span className="ai-suggestion__icon" aria-hidden="true">
+                      <Sparkles size={12} />
+                    </span>
+                    AI suggestion
+                  </span>
+                </div>
+                <p>
+                  Review {highlightedMedication.name} against recent fasting sugar and dialysis
+                  follow-up.
+                </p>
+              </div>
+            </div>
           ) : null}
         </section>
 
