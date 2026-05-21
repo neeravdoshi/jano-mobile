@@ -1375,6 +1375,8 @@ a {
 .dialysis-page {
   display: grid;
   min-height: 100%;
+  position: relative;
+  isolation: isolate;
 }
 
 .notes-page,
@@ -2858,7 +2860,6 @@ a {
   background: rgba(246, 247, 245, 0.96);
 }
 
-.rx-context,
 .prescription-editor__patient,
 .prescription-editor__sheet {
   padding: 18px;
@@ -2868,14 +2869,6 @@ a {
   box-shadow: 0 12px 24px rgba(37, 35, 35, 0.05);
 }
 
-.rx-context {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-sm);
-}
-
-.rx-context__title,
 .rx-card__title,
 .prescription-editor__patient-name {
   margin: 0;
@@ -2884,12 +2877,6 @@ a {
   letter-spacing: 0;
 }
 
-.rx-context__title {
-  font-size: 1.12rem;
-  line-height: 1.1;
-}
-
-.rx-context__meta,
 .rx-card__summary,
 .rx-card__footer,
 .rx-empty__body,
@@ -2901,32 +2888,6 @@ a {
   color: var(--color-text-muted);
   font-size: 0.82rem;
   line-height: 1.45;
-}
-
-.rx-context__stats {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-  min-width: 128px;
-}
-
-.rx-context__stats > div {
-  display: grid;
-  gap: 4px;
-  padding: 12px 10px;
-  border-radius: 18px;
-  background: rgba(246, 247, 245, 0.88);
-  text-align: center;
-}
-
-.rx-context__stats strong {
-  font-size: 1rem;
-  line-height: 1;
-}
-
-.rx-context__stats span {
-  color: var(--color-text-muted);
-  font-size: 0.72rem;
 }
 
 .rx-toolbar {
@@ -3092,53 +3053,6 @@ a {
   box-shadow: 0 16px 28px rgba(37, 35, 35, 0.16);
 }
 
-.rx-sheet__scrim {
-  position: fixed;
-  inset: 0;
-  border: none;
-  background: rgba(37, 35, 35, 0.16);
-  z-index: 13;
-}
-
-.rx-sheet {
-  position: fixed;
-  left: 16px;
-  right: 16px;
-  bottom: calc(86px + env(safe-area-inset-bottom));
-  z-index: 14;
-  display: grid;
-  gap: 10px;
-  padding: 14px;
-  border-radius: 24px;
-  border: 1px solid rgba(212, 216, 219, 0.9);
-  background: rgba(255, 255, 255, 0.98);
-  box-shadow: 0 24px 40px rgba(37, 35, 35, 0.14);
-}
-
-.rx-sheet__option,
-.rx-sheet__cancel {
-  min-height: 48px;
-  border-radius: 16px;
-  border: 1px solid rgba(212, 216, 219, 0.9);
-  background: rgba(255, 255, 255, 0.98);
-  color: var(--color-text);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 0 14px;
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
-.rx-sheet__option-icon {
-  width: 30px;
-  height: 30px;
-  border-radius: 10px;
-  display: grid;
-  place-items: center;
-  background: rgba(246, 247, 245, 0.96);
-}
-
 .prescription-editor__patient-name {
   font-size: 1rem;
   line-height: 1.1;
@@ -3163,7 +3077,6 @@ a {
 }
 
 .prescription-editor__voice,
-.prescription-editor__assist,
 .prescription-editor__icon-action {
   width: 36px;
   height: 36px;
@@ -3176,18 +3089,6 @@ a {
   flex: 0 0 auto;
 }
 
-.prescription-editor__prompt {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 14px;
-  border-radius: 18px;
-  background: rgba(248, 249, 246, 0.94);
-  border: 1px solid rgba(230, 233, 235, 0.9);
-}
-
-.prescription-editor__prompt-label,
 .prescription-editor__field > span,
 .prescription-editor__grid label span,
 .prescription-editor__subfield span,
@@ -3197,10 +3098,6 @@ a {
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-}
-
-.prescription-editor__prompt-label {
-  margin: 0 0 6px;
 }
 
 .prescription-editor__field {
@@ -3278,14 +3175,13 @@ a {
 }
 
 .prescription-editor__dictation {
-  position: fixed;
-  left: 16px;
-  right: 16px;
+  position: sticky;
   bottom: calc(86px + env(safe-area-inset-bottom));
-  z-index: 14;
+  z-index: 11;
   display: grid;
   gap: 12px;
   padding: 16px;
+  margin-top: -4px;
   border-radius: 24px;
   border: 1px solid rgba(212, 216, 219, 0.92);
   background: rgba(255, 255, 255, 0.98);
@@ -3364,6 +3260,296 @@ a {
   align-items: center;
   justify-content: center;
   gap: 8px;
+}
+
+.prescription-print-preview__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 18;
+  border: 0;
+  background: rgba(15, 14, 14, 0.72);
+}
+
+.prescription-print-preview {
+  position: absolute;
+  inset: 0;
+  z-index: 19;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  background: #1f1f1f;
+  color: #fff;
+}
+
+.prescription-print-preview__topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: calc(var(--space-lg) + env(safe-area-inset-top)) var(--space-md) var(--space-md);
+  background: #1f1f1f;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.prescription-print-preview__eyebrow,
+.prescription-print-sheet__label,
+.prescription-print-sheet__patient p {
+  margin: 0;
+  color: var(--color-text-soft);
+  font-size: 0.54rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.prescription-print-preview__title,
+.prescription-print-sheet__brand h3,
+.prescription-print-sheet__patient strong,
+.prescription-print-sheet__medication strong {
+  margin: 0;
+  color: var(--color-text);
+  font-family: var(--font-display);
+}
+
+.prescription-print-preview__title {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 0.98rem;
+  color: #fff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.prescription-print-preview__actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.prescription-print-preview__button {
+  min-height: 40px;
+  border-radius: 999px;
+  padding: 0 12px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.prescription-print-preview__button--primary {
+  border: 0;
+  background: rgba(255, 255, 255, 0.94);
+  color: #1f1f1f;
+}
+
+.prescription-print-preview__button--icon {
+  width: 40px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.prescription-print-preview__canvas {
+  position: relative;
+  overflow: auto;
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  padding: 28px 18px 72px;
+  background: #7e7e7c;
+}
+
+.prescription-print-preview__page-count {
+  position: sticky;
+  top: 12px;
+  justify-self: start;
+  margin-left: 14px;
+  z-index: 2;
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.94);
+  color: #1f1f1f;
+  font-weight: 700;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.12);
+}
+
+.prescription-print-sheet {
+  width: min(100%, 330px);
+  aspect-ratio: 210 / 297;
+  overflow: hidden;
+  padding: 22px 24px;
+  border-radius: 0;
+  border: 0;
+  background: #fff;
+  color: #1f1f1f;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.24);
+  transform-origin: top center;
+  align-content: start;
+}
+
+.prescription-print-sheet,
+.prescription-print-sheet__medications,
+.prescription-print-sheet__list {
+  display: grid;
+  gap: 9px;
+}
+
+.prescription-print-sheet__header,
+.prescription-print-sheet__brand,
+.prescription-print-sheet__meta,
+.prescription-print-sheet__medication-top,
+.prescription-print-sheet__signature {
+  display: flex;
+}
+
+.prescription-print-sheet__header {
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(31, 31, 31, 0.2);
+}
+
+.prescription-print-sheet__brand {
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.prescription-print-sheet__crest {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: rgba(18, 176, 95, 0.1);
+  color: var(--color-accent-strong);
+  font-weight: 700;
+  font-size: 0.94rem;
+}
+
+.prescription-print-sheet__brand h3 {
+  font-size: 0.78rem;
+  line-height: 1.15;
+}
+
+.prescription-print-sheet__brand p,
+.prescription-print-sheet__meta span,
+.prescription-print-sheet__body,
+.prescription-print-sheet__medication p,
+.prescription-print-sheet__list-row span,
+.prescription-print-sheet__signature p {
+  margin: 4px 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.54rem;
+  line-height: 1.38;
+}
+
+.prescription-print-sheet__meta {
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 7px;
+}
+
+.prescription-print-sheet__meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+}
+
+.prescription-print-sheet__patient,
+.prescription-print-sheet__footer-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.prescription-print-sheet__patient {
+  padding: 9px 0 0;
+  border-bottom: 1px solid rgba(31, 31, 31, 0.14);
+  padding-bottom: 9px;
+}
+
+.prescription-print-sheet__patient strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.64rem;
+}
+
+.prescription-print-sheet__section {
+  display: grid;
+  gap: 5px;
+}
+
+.prescription-print-sheet__body {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 0.58rem;
+  line-height: 1.42;
+}
+
+.prescription-print-sheet__medication,
+.prescription-print-sheet__list-row {
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(31, 31, 31, 0.12);
+}
+
+.prescription-print-sheet__medication:last-child,
+.prescription-print-sheet__list-row:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.prescription-print-sheet__medication-top {
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.prescription-print-sheet__medication-top span {
+  color: var(--color-text-muted);
+  font-size: 0.54rem;
+}
+
+.prescription-print-sheet__medication p,
+.prescription-print-sheet__hint {
+  margin: 3px 0 0;
+}
+
+.prescription-print-sheet__hint {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.prescription-print-sheet__list-row {
+  display: grid;
+  gap: 4px;
+}
+
+.prescription-print-sheet__signature {
+  align-items: end;
+  justify-content: space-between;
+  padding-top: 10px;
+  margin-top: 2px;
+  border-top: 1px solid rgba(31, 31, 31, 0.2);
+}
+
+.prescription-print-sheet__signature strong {
+  font-size: 0.58rem;
+}
+
+.prescription-print-sheet__signature span {
+  display: block;
+  margin-top: 3px;
+  color: var(--color-text-muted);
+  font-size: 0.5rem;
 }
 
 .note-editor__menu {

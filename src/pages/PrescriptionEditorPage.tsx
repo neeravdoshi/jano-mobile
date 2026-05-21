@@ -1,13 +1,16 @@
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
+  CalendarDays,
   ChevronLeft,
+  ClipboardList,
+  Download,
   Mic,
   MoreHorizontal,
   Plus,
   Printer,
-  Sparkles,
   Trash2,
+  X,
 } from "lucide-react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
@@ -26,6 +29,10 @@ function cloneMedication(medication: PrescriptionMedication): PrescriptionMedica
 
 function cloneInvestigation(investigation: PrescriptionInvestigation): PrescriptionInvestigation {
   return { ...investigation };
+}
+
+function hasText(value: string) {
+  return value.trim().length > 0;
 }
 
 export function PrescriptionEditorPage() {
@@ -63,6 +70,7 @@ export function PrescriptionEditorPage() {
     existingPrescription?.investigations.map(cloneInvestigation) ?? []
   );
   const [dictationOpen, setDictationOpen] = useState(state?.mode === "dictation");
+  const [printPreviewOpen, setPrintPreviewOpen] = useState(false);
 
   const pageTitle = existingPrescription ? "Prescription" : "New Rx";
   const recordMeta = useMemo(() => {
@@ -70,6 +78,18 @@ export function PrescriptionEditorPage() {
       ? `${existingPrescription.department} · ${existingPrescription.createdAt}`
       : "Prescription";
   }, [existingPrescription]);
+  const previewMedications = useMemo(
+    () => medications.filter((item) => hasText(item.name)),
+    [medications]
+  );
+  const previewInvestigations = useMemo(
+    () => investigations.filter((item) => hasText(item.name)),
+    [investigations]
+  );
+
+  function openPrintPreview() {
+    setPrintPreviewOpen(true);
+  }
 
   function updateMedication(id: string, key: keyof PrescriptionMedication, value: string) {
     setMedications((current) =>
@@ -162,19 +182,6 @@ export function PrescriptionEditorPage() {
             />
             <button type="button" className="prescription-editor__voice" aria-label="Dictate prescription" onClick={() => setDictationOpen((current) => !current)}>
               <Mic size={16} />
-            </button>
-          </div>
-
-          <div className="prescription-editor__prompt">
-            <div>
-              <p className="prescription-editor__prompt-label">Dictate / type Rx</p>
-              <p className="prescription-editor__prompt-copy">
-                {existingPrescription?.dictationPrompt ??
-                  "Start with the problem statement, then move through diagnosis, medications, investigations, and follow-up."}
-              </p>
-            </div>
-            <button type="button" className="prescription-editor__assist">
-              <Sparkles size={15} />
             </button>
           </div>
 
@@ -399,12 +406,180 @@ export function PrescriptionEditorPage() {
         </motion.div>
       ) : null}
 
+      {printPreviewOpen ? (
+        <>
+          <motion.button
+            type="button"
+            className="prescription-print-preview__scrim"
+            aria-label="Close print preview"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setPrintPreviewOpen(false)}
+          />
+          <motion.section
+            className="prescription-print-preview"
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={motionTokens.spring.soft}
+          >
+            <div className="prescription-print-preview__topbar">
+              <h2 className="prescription-print-preview__title">Prescription preview</h2>
+              <div className="prescription-print-preview__actions">
+                <button
+                  type="button"
+                  className="prescription-print-preview__button prescription-print-preview__button--primary"
+                  onClick={() => window.print()}
+                >
+                  <Download size={15} />
+                  Print
+                </button>
+                <button
+                  type="button"
+                  className="prescription-print-preview__button prescription-print-preview__button--icon"
+                  aria-label="Close print preview"
+                  onClick={() => setPrintPreviewOpen(false)}
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            </div>
+
+            <div className="prescription-print-preview__canvas">
+              <span className="prescription-print-preview__page-count">1 of 1</span>
+              <article className="prescription-print-sheet">
+                <header className="prescription-print-sheet__header">
+                  <div className="prescription-print-sheet__brand">
+                    <span className="prescription-print-sheet__crest">Rx</span>
+                    <div>
+                      <h3>Dr. {existingPrescription?.doctor ?? "Mehta"}</h3>
+                      <p>Consultant Nephrologist</p>
+                      <p>City General Hospital · Registration no. CGH-4832</p>
+                    </div>
+                  </div>
+                  <div className="prescription-print-sheet__meta">
+                    <span>
+                      <CalendarDays size={14} />
+                      {existingPrescription?.createdAt ?? "Today"}
+                    </span>
+                    <span>
+                      <ClipboardList size={14} />
+                      {existingPrescription?.department ?? "Outpatient consultation"}
+                    </span>
+                  </div>
+                </header>
+
+                <section className="prescription-print-sheet__patient">
+                  <div>
+                    <p>Patient</p>
+                    <strong>{patient.name}</strong>
+                  </div>
+                  <div>
+                    <p>MRN</p>
+                    <strong>{patient.id.toUpperCase()}</strong>
+                  </div>
+                  <div>
+                    <p>Age / Sex</p>
+                    <strong>
+                      {patient.age}Y / {patient.gender}
+                    </strong>
+                  </div>
+                </section>
+
+                <section className="prescription-print-sheet__section">
+                  <p className="prescription-print-sheet__label">Chief complaints & HPI</p>
+                  <p className="prescription-print-sheet__body">
+                    {hasText(complaints) ? complaints : "Not documented."}
+                  </p>
+                </section>
+
+                <section className="prescription-print-sheet__section">
+                  <p className="prescription-print-sheet__label">Diagnosis</p>
+                  <p className="prescription-print-sheet__body">
+                    {hasText(diagnosis) ? diagnosis : "Not documented."}
+                  </p>
+                </section>
+
+                {previewMedications.length > 0 ? (
+                  <section className="prescription-print-sheet__section">
+                    <p className="prescription-print-sheet__label">Medications</p>
+                    <div className="prescription-print-sheet__medications">
+                      {previewMedications.map((medication, index) => (
+                        <article className="prescription-print-sheet__medication" key={medication.id}>
+                          <div className="prescription-print-sheet__medication-top">
+                            <strong>
+                              {index + 1}. {medication.name}
+                            </strong>
+                            <span>
+                              {medication.form} {medication.strength}
+                            </span>
+                          </div>
+                          <p>
+                            {medication.frequency} · {medication.duration} · {medication.timing}
+                          </p>
+                          {hasText(medication.notes) ? (
+                            <p className="prescription-print-sheet__hint">{medication.notes}</p>
+                          ) : null}
+                        </article>
+                      ))}
+                    </div>
+                  </section>
+                ) : null}
+
+                {previewInvestigations.length > 0 ? (
+                  <section className="prescription-print-sheet__section">
+                    <p className="prescription-print-sheet__label">Investigations</p>
+                    <div className="prescription-print-sheet__list">
+                      {previewInvestigations.map((investigation) => (
+                        <div className="prescription-print-sheet__list-row" key={investigation.id}>
+                          <strong>{investigation.name}</strong>
+                          <span>
+                            {investigation.category}
+                            {hasText(investigation.instructions) ? ` · ${investigation.instructions}` : ""}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                ) : null}
+
+                <section className="prescription-print-sheet__footer-grid">
+                  <div className="prescription-print-sheet__section">
+                    <p className="prescription-print-sheet__label">Plan & advice</p>
+                    <p className="prescription-print-sheet__body">
+                      {hasText(advice) ? advice : "No additional advice documented."}
+                    </p>
+                  </div>
+                  <div className="prescription-print-sheet__section">
+                    <p className="prescription-print-sheet__label">Follow-up</p>
+                    <p className="prescription-print-sheet__body">
+                      {hasText(followUp) ? followUp : "Follow-up timing not documented."}
+                    </p>
+                  </div>
+                </section>
+
+                <footer className="prescription-print-sheet__signature">
+                  <div>
+                    <p>Generated by Jano</p>
+                    <span>Page 1 of 1</span>
+                  </div>
+                  <div>
+                    <strong>{existingPrescription?.doctor ?? "Dr. Mehta"}</strong>
+                    <p>Consultant signature</p>
+                  </div>
+                </footer>
+              </article>
+            </div>
+          </motion.section>
+        </>
+      ) : null}
+
       <div className="prescription-editor__actions">
         <button type="button" className="prescription-editor__secondary" onClick={() => navigate("/prescriptions", { state: { patientId: patient.id } })}>
           Save draft
         </button>
         {existingPrescription?.status === "signed" ? (
-          <button type="button" className="prescription-editor__primary" onClick={() => navigate("/prescriptions", { state: { patientId: patient.id } })}>
+          <button type="button" className="prescription-editor__primary" onClick={openPrintPreview}>
             <Printer size={16} />
             Print
           </button>

@@ -1,13 +1,10 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { useMemo, useState } from "react";
 import {
   ChevronLeft,
   ChevronRight,
-  Mic,
   Plus,
   Search,
-  Stethoscope,
-  X,
 } from "lucide-react";
 import clsx from "clsx";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -76,7 +73,6 @@ export function PrescriptionsPage() {
 
   const [filter, setFilter] = useState<PrescriptionFilter>("all");
   const [query, setQuery] = useState("");
-  const [createSheetOpen, setCreateSheetOpen] = useState(false);
 
   const filteredPrescriptions = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -117,9 +113,6 @@ export function PrescriptionsPage() {
     return groups;
   }, [filteredPrescriptions]);
 
-  const signedCount = prescriptions.filter((record) => record.status === "signed").length;
-  const draftCount = prescriptions.filter((record) => record.status === "draft").length;
-
   return (
     <motion.div
       className="prescriptions-page"
@@ -140,26 +133,6 @@ export function PrescriptionsPage() {
       </header>
 
       <div className="prescriptions-body">
-        <section className="rx-context">
-          <div>
-            <p className="eyebrow">Patient context</p>
-            <h2 className="rx-context__title">Recent prescription activity</h2>
-            <p className="rx-context__meta">
-              Write quickly, review safely, and reopen prior Rx without losing clinical context.
-            </p>
-          </div>
-          <div className="rx-context__stats">
-            <div>
-              <strong>{signedCount}</strong>
-              <span>Signed</span>
-            </div>
-            <div>
-              <strong>{draftCount}</strong>
-              <span>Drafts</span>
-            </div>
-          </div>
-        </section>
-
         <section className="rx-toolbar">
           <label className="rx-search">
             <Search size={16} />
@@ -217,59 +190,15 @@ export function PrescriptionsPage() {
       </div>
 
       <div className="rx-create-bar">
-        <button type="button" className="rx-create-bar__button" onClick={() => setCreateSheetOpen(true)}>
+        <button
+          type="button"
+          className="rx-create-bar__button"
+          onClick={() => navigate("/prescriptions/new", { state: { patientId: patient.id, mode: "typed" } })}
+        >
           <Plus size={18} />
           New Rx
         </button>
       </div>
-
-      <AnimatePresence>
-        {createSheetOpen ? (
-          <>
-            <motion.button
-              type="button"
-              className="rx-sheet__scrim"
-              aria-label="Close create prescription options"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setCreateSheetOpen(false)}
-            />
-            <motion.div
-              className="rx-sheet"
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 18 }}
-              transition={motionTokens.spring.soft}
-            >
-              <button
-                type="button"
-                className="rx-sheet__option"
-                onClick={() => navigate("/prescriptions/new", { state: { patientId: patient.id, mode: "typed" } })}
-              >
-                <span className="rx-sheet__option-icon">
-                  <Stethoscope size={16} />
-                </span>
-                Start typed prescription
-              </button>
-              <button
-                type="button"
-                className="rx-sheet__option"
-                onClick={() => navigate("/prescriptions/new", { state: { patientId: patient.id, mode: "dictation" } })}
-              >
-                <span className="rx-sheet__option-icon">
-                  <Mic size={16} />
-                </span>
-                Start with dictation
-              </button>
-              <button type="button" className="rx-sheet__cancel" onClick={() => setCreateSheetOpen(false)}>
-                <X size={16} />
-                Cancel
-              </button>
-            </motion.div>
-          </>
-        ) : null}
-      </AnimatePresence>
     </motion.div>
   );
 }
